@@ -48,17 +48,21 @@ def addEvent(name, location, date, time):
 
 def getEventParticipants(event_id):
     try:
-        result = []
+        participant_result = []
+        observer_result =  []
         session = conect()
         participants = session.query(EkitaldiPartehartzaileak).where(EkitaldiPartehartzaileak.col_eventID == event_id).order_by(EkitaldiPartehartzaileak.col_partehartzeMota).all()
         for participant in participants:
             participant_info = session.query(Erabiltzaileak).filter(Erabiltzaileak.col_userID == participant.col_userID).all()[0]
-            result.append({"col_userID" : participant_info.col_userID, "col_erabiltzaile_izena" :participant_info.col_erabiltzaile_izena, "col_erabiltzaile_abizena" : participant_info.col_erabiltzaile_abizena, "col_partehartzeMota":participant.col_partehartzeMota})
+            if(participant.col_partehartzeMota == 1):
+                participant_result.append({"col_userID" : participant_info.col_userID, "col_erabiltzaile_izena" :participant_info.col_erabiltzaile_izena, "col_erabiltzaile_abizena" : participant_info.col_erabiltzaile_abizena})
+            else:
+                observer_result.append({"col_userID" : participant_info.col_userID, "col_erabiltzaile_izena" :participant_info.col_erabiltzaile_izena, "col_erabiltzaile_abizena" : participant_info.col_erabiltzaile_abizena})
     except Exception as e:
         print(e)
     finally:
         session.close()
-    return result
+    return (participant_result, observer_result)
 
 def putEventParticipant(event_id, user_id, participation_type):
     try:

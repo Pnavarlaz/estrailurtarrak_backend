@@ -25,8 +25,8 @@ def putUser():
 def getEventUsers():
     parameters = request.args
     eventID = parameters['eventID']
-    result = eventControler.getEventParticipants(event_id=eventID)
-    return jsonify(result)
+    participants, observers = eventControler.getEventParticipants(event_id=eventID)
+    return jsonify({'participants' : participants,'observers': observers})
 
 @user_api.route("/eventuser" , methods = ['POST'])
 def addUserToEvent():
